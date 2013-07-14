@@ -1,2 +1,3 @@
 malloc
 *.s
+perf.data*

@@ -196,9 +196,14 @@ pub fn diagnostics() {
 
 fn main() {
     unsafe {
-        let mut i = 1000;
-        while i > 0 {
-            print!("i = ", i);
+        // general_test();
+        basic_bench();
+    }
+}
+unsafe fn general_test() {
+    let mut i = 1000;
+    while i > 0 {
+        print!("i = ", i);
             let x = malloc(i) as *mut uint;
             print!("x = ", x);
             *x = 10;
@@ -209,20 +214,34 @@ fn main() {
             i -= 100;
         }
 
-        puts("Interleaved. Allocating...\n");
-        let x = malloc(10000);
-        diagnostics();
-        let y = malloc(10000);
-        diagnostics();
-        let z = malloc(10000);
-        diagnostics();
-        puts("Freeing...\n");
-        free(z);
-        diagnostics();
-        free(x);
-        diagnostics();
-        free(y);
-        diagnostics();
+    puts("Interleaved. Allocating...\n");
+    let x = malloc(10000);
+    diagnostics();
+    let y = malloc(10000);
+    diagnostics();
+    let z = malloc(10000);
+    diagnostics();
+    puts("Freeing...\n");
+    free(z);
+    diagnostics();
+    free(x);
+    diagnostics();
+    free(y);
+    diagnostics();
+}
+unsafe fn basic_bench() {
+    static LIMIT: uint = 10000000;
+    let mut i = 0;
+    while i < LIMIT {
+        let size = 100 + ((i*i - 13) * 32313) % 100000;
+        free(malloc(size));
+        //zero::free(zero::malloc(size));
+        if i % (LIMIT / 5) == 0 {
+            print!("i = ", i);
+            print!("size = ", size);
+            diagnostics();
+        }
+        i += 1;
     }
 }
 
