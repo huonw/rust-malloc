@@ -15,6 +15,16 @@ wrapper. Requires a recent `rustc` from master.
 There is an example of a custom version of `~T` using this allocator
 at the bottom of `malloc.rs`.
 
+Test with:
+
+    make
+    ./malloc
+
+To enable the debugging `assert`s:
+
+    make debug
+    ./malloc-debug
+
 ## TODO
 
 - Use `mmap`.

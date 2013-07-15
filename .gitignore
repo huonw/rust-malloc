@@ -1,3 +1,4 @@
 malloc
+malloc-debug
 *.s
 perf.data*
