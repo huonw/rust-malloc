@@ -61,6 +61,17 @@ pub fn putn(mut x: uint) {
     unsafe { write(1, ((&out) as *[u8, .. 20] as uint + i + 1) as *u8, 19 - i); }
 }
 
+/// Round `n` up to the nearest power of two.
+pub fn round_up(mut n: uint) -> uint {
+    n -= 1;
+    n |= n >> 1;
+    n |= n >> 2;
+    n |= n >> 4;
+    n |= n >> 8;
+    n |= n >> 16;
+    n + 1
+}
+
 extern {
     fn write(x: int, y: *u8, z: uint) -> int;
 }

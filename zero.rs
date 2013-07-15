@@ -25,7 +25,7 @@ pub trait Sized {}
 
 #[lang="drop"]
 pub trait Drop {
-    fn finalize(&self);
+    fn drop(&self);
 }
 
 pub type GlueFn = extern "Rust" fn(*i8);
@@ -443,4 +443,7 @@ extern {
 extern "rust-intrinsic" {
     pub fn transmute<T,U>(val: T) -> U;
     pub fn size_of<T>() -> uint;
+    pub fn forget<T>(val: T);
+    pub fn move_val<T>(dst: &mut T, src: T);
+    pub unsafe fn uninit<T>() -> T;
 }
