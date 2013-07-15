@@ -114,10 +114,10 @@ pub fn free(ptr: *mut u8) {
 
     ptr.header().free = true;
 
-    // XXX: merge adjacent free blocks. Broken because of things.
     // attempt to merge with the next block (if it's free)
-    // ptr.try_merge();
+    ptr.try_merge();
 
+    // XXX: merge with previous free block. Broken because of things.
     // attempt to merge with the previous block (if it's free).
     // ptr.prev().try_merge();
 }
@@ -134,6 +134,11 @@ fn main() {
 }
 unsafe fn general_test() {
     let mut i = 1000;
+    diagnostics();
+    let x = malloc(1);
+    diagnostics();
+    free(x);
+    diagnostics();
     while i > 0 {
         print!("i = ", i);
         let x = malloc(i) as *mut uint;
@@ -181,7 +186,6 @@ unsafe fn interleaved_bench() {
     static LIMIT: uint = 10000;
     let mut ptrs = [0 as *mut u8, .. LIMIT];
     let mut i = 0;
-    //malloc(1000);
     while i < LIMIT {
         let size = 100 + ((i*i - 13) * 32313) % 100000;
         ptrs[i] = malloc(size);
@@ -245,6 +249,7 @@ fn unique_ptrs() {
         }
     }
 
+    // prints when dropped, for testing that Unique behaves correctly.
     struct TestDtor(int);
     impl Drop for TestDtor {
         fn drop(&self) {
@@ -261,7 +266,7 @@ fn unique_ptrs() {
         let x = t;
         // let y = t; // error: use of moved value: `t`
         diagnostics();
-    }
+    } // should be freed here
     diagnostics();
     {
         let a = Unique::new(0);
