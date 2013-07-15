@@ -39,7 +39,7 @@ mod debugging {
 pub fn puts(s: &str) {
     unsafe {
         let (x, len) = ::zero::transmute::<&str, (*u8, uint)>(s);
-        write(1, x, len);
+        write(1, x, len - 1);
     }
 }
 /// Print an integer.
