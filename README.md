@@ -25,6 +25,17 @@ To enable the debugging `assert`s:
     make debug
     ./malloc-debug
 
+Code map:
+
+- `malloc.rs` contains `malloc`, `free`, etc, as well as `main` and some tests/examples.
+- `types.rs` contains the allocation header (`Header`, surprisingly)
+  as well some newtype structs around raw pointers (`Box` and `Data`;
+  in theory these have no runtime cost over using `*mut Header` and
+  `*mut u8` directly) which make the implementation relatively
+  type-safe.
+- `util.rs` & `diag.rs` contain utilities and tools for printing
+  diagnostics about the current allocation state.
+
 ## TODO
 
 - Use `mmap`.
