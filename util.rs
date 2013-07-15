@@ -5,7 +5,7 @@ macro_rules! print {
     ($a:expr, $b:expr) => {{
         ::util::puts($a);
         ::util::putn($b as uint);
-        util::puts("\n");
+        ::util::puts("\n");
     }}
 }
 

@@ -1,12 +1,14 @@
 #[allow(ctypes, unused_variable)];
 #[no_std];
 use types::{Header, Data, Box, header_size};
+use diag::diagnostics;
 
 mod zero;
 
 mod util;
 mod syscall;
 mod types;
+mod diag;
 
 static SC_BRK: int = 12;
 
@@ -27,8 +29,8 @@ unsafe fn sbrk(increment: int) -> *mut u8 {
     brk(new as *mut u8)
 }
 
-
-static mut malloc_root: Box = Box(0 as *mut Header);
+// pub for diagnostics
+pub static mut malloc_root: Box = Box(0 as *mut Header);
 
 pub fn init_malloc() {
     unsafe {
@@ -118,61 +120,6 @@ pub fn free(ptr: *mut u8) {
 
     // attempt to merge with the previous block (if it's free).
     // ptr.prev().try_merge();
-}
-
-
-pub fn print_boxes() {
-    use util::{puts, putn};
-    let mut ptr = unsafe{malloc_root};
-    puts("\t++ CHAIN ++\n");
-    while !ptr.is_null() {
-        puts("\t+ ptr = ");
-        putn(*ptr as uint);
-        puts(", size = ");
-        putn(ptr.size());
-        puts(if ptr.is_free() {", free\n"} else {", alloc\n"});
-
-        ptr = ptr.next();
-    }
-}
-
-pub fn count_blocks() -> (uint, uint, uint, uint) {
-
-    let mut count = 0;
-    let mut ptr = unsafe {malloc_root};
-    let mut free = 0;
-    let mut fsize = 0;
-    let mut not_free = 0;
-    let mut nsize = 0;
-
-
-    while !ptr.is_null() && count < 10_000_000 {
-        if ptr.is_free() {
-            free += 1;
-            fsize += ptr.size();
-        } else {
-            not_free += 1;
-            nsize += ptr.size();
-        }
-
-        ptr = ptr.next();
-        // catch infinite loop bugs.
-        count += 1;
-    }
-
-    assert!(ptr.is_null(), "More than 10000000 allocations.");
-
-    (free, fsize, not_free, nsize)
-}
-
-pub fn diagnostics() {
-    let (f, fs, n, ns) = count_blocks();
-
-    util::puts(  "\t** DIAGS **\n");
-    print!("\t*  free # = ", f);
-    print!("\t*    free = ", fs);
-    print!("\t* alloc # = ", n);
-    print!("\t*   alloc = ", ns);
 }
 
 
