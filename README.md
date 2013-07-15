@@ -36,6 +36,8 @@ Code map:
 - `util.rs` & `diag.rs` contain utilities and tools for printing
   diagnostics about the current allocation state.
 
+**Only useful for segfaulting and generally making programs incorrect.**
+
 ## TODO
 
 - Use `mmap`.
