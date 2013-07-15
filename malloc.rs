@@ -2,59 +2,7 @@
 #[no_std];
 mod zero;
 
-macro_rules! print {
-    ($a:expr, $b:expr) => {{
-        puts($a);
-        putn($b as uint);
-        puts("\n");
-    }}
-}
-
-#[macro_escape]
-#[cfg(debug)]
-mod debugging {
-    macro_rules! assert {
-        ($test:expr, $message:expr) => {
-            if !$test {
-                puts($message);
-                unsafe { zero::abort(); }
-            }
-        }
-    }
-}
-#[macro_escape]
-#[cfg(not(debug))]
-mod debugging {
-    macro_rules! assert { ($test:expr, $message:expr) => {{}} }
-}
-
-
-
-#[inline(never)]
-fn puts(s: &str) {
-    unsafe {
-        let (x, len) = zero::transmute::<&str, (*u8, uint)>(s);
-        write(1, x, len);
-    }
-}
-#[inline(never)]
-fn putn(mut x: uint) {
-    let mut out = [' ' as u8, .. 20];
-    let mut i = 19u;
-    if x == 0 {
-        out[i] = '0' as u8;
-        i -= 1
-    }
-    while x != 0 {
-        let digit = x % 10;
-        out[i] = '0' as u8 + digit as u8;
-        i -= 1;
-        x /= 10;
-    }
-
-    unsafe { write(1, ((&out) as *[u8, .. 20] as uint + i + 1) as *u8, 19 - i); }
-}
-
+mod util;
 mod syscall;
 
 static SC_BRK: int = 12;
@@ -319,7 +267,7 @@ pub fn count_blocks() -> (uint, uint, uint, uint) {
 pub fn diagnostics() {
     let (f, fs, n, ns) = count_blocks();
 
-    puts(  "\t** DIAGS **\n");
+    util::puts(  "\t** DIAGS **\n");
     print!("\t*    f = ", f);
     print!("\t*  f s = ", fs);
     print!("\t*   nf = ", n);
@@ -347,14 +295,14 @@ unsafe fn general_test() {
             i -= 100;
         }
 
-    puts("Interleaved. Allocating...\n");
+    util::puts("Interleaved. Allocating...\n");
     let x = malloc(10000);
     diagnostics();
     let y = malloc(10000);
     diagnostics();
     let z = malloc(10000);
     diagnostics();
-    puts("Freeing...\n");
+    util::puts("Freeing...\n");
     free(z);
     diagnostics();
     free(x);
