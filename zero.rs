@@ -251,18 +251,7 @@ struct StringRepr {
 // FIXME(pcwalton): This function should not be necessary, I don't think.
 #[lang="strdup_uniq"]
 pub unsafe fn strdup_uniq(ptr: *u8, len: uint) -> ~str {
-    let size = size_of::<StringRepr>() + len + 1;
-    let ret: uint = transmute(exchange_malloc(transmute(0), size));
-    let string: *mut StringRepr = transmute(ret + size_of::<Header>());
-    (*string).fill = len + 1;
-    (*string).alloc = len + 1;
-
-    let mut data_ptr: uint = transmute(string);
-    data_ptr += size_of::<StringRepr>();
-    let data_ptr: *mut u8 = transmute(data_ptr);
-    memcpy(data_ptr, ptr, len + 1);
-
-    transmute(ret)
+    abort();
 }
 
 // Legacy junk
@@ -326,7 +315,6 @@ pub struct BoxRepr {
 #[lang="exchange_malloc"]
 pub unsafe fn exchange_malloc(type_desc: *i8, size: uint) -> *i8 {
     abort();
-    //transmute(malloc(size))
 }
 
 #[cfg(not(test))]
@@ -334,38 +322,22 @@ pub unsafe fn exchange_malloc(type_desc: *i8, size: uint) -> *i8 {
 #[inline]
 pub unsafe fn vector_exchange_malloc(align: u32, size: uint) -> *i8 {
     abort();
-    //let total_size = get_box_size(size as uint, align as uint);
-    //malloc(total_size as uint) as *i8
 }
 
-// FIXME: #7496
 #[lang="closure_exchange_malloc"]
 #[inline]
 pub unsafe fn closure_exchange_malloc_(td: *i8, size: uint) -> *i8 {
     abort();
-    //closure_exchange_malloc(td, size)
 }
 
 #[inline]
 pub unsafe fn closure_exchange_malloc(td: *i8, size: uint) -> *i8 {
     abort();
-    /*let td = td as *TyDesc;
-    let size = size as uint;
-
-    if td as uint == 0 { abort() }
-
-    let total_size = get_box_size(size, (*td).align);
-    let p = malloc(total_size as uint);
-
-    let box: *mut BoxRepr = p as *mut BoxRepr;
-    (*box).header.type_desc = td;
-
-    box as *i8*/
 }
 
 #[lang="exchange_free"]
 pub unsafe fn exchange_free(alloc: *i8) {
-    free(transmute(alloc))
+    abort();
 }
 
 // Entry point
@@ -426,10 +398,6 @@ pub unsafe fn check_not_borrowed(_: *u8, _: *i8, _: uint) {
 // libc dependencies
 
 extern {
-    #[fast_ffi]
-    pub fn malloc(size: uint) -> *u8;
-    #[fast_ffi]
-    pub fn free(ptr: *u8);
     #[fast_ffi]
     pub fn abort() -> !;
     #[fast_ffi]
