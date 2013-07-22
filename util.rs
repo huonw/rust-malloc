@@ -72,6 +72,14 @@ pub fn round_up(mut n: uint) -> uint {
     n + 1
 }
 
+pub fn errinfo() -> (int, &'static str) {
+    unsafe {
+        let i = *__errno_location();
+        (i, strerror(i))
+    }
+}
 extern {
     fn write(x: int, y: *u8, z: uint) -> int;
+    fn __errno_location() -> &'static int;
+    fn strerror(e: int) -> &'static str;
 }
