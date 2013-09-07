@@ -10,6 +10,7 @@ macro_rules! print {
 }
 
 /// Prints the message and exits.
+#[fixed_stack_segment]
 pub fn fail(msg: &str) -> ! {
     puts(msg);
     puts("\n");
@@ -36,6 +37,7 @@ mod debugging {
 
 /// Print a string.
 #[inline(never)]
+#[fixed_stack_segment]
 pub fn puts(s: &str) {
     unsafe {
         let (x, len) = ::zero::transmute::<&str, (*u8, uint)>(s);
@@ -44,6 +46,7 @@ pub fn puts(s: &str) {
 }
 /// Print an integer.
 #[inline(never)]
+#[fixed_stack_segment]
 pub fn putn(mut x: uint) {
     let mut out = [' ' as u8, .. 20];
     let mut i = 19u;
@@ -72,6 +75,7 @@ pub fn round_up(mut n: uint) -> uint {
     n + 1
 }
 
+#[fixed_stack_segment]
 pub fn errinfo() -> (int, &'static str) {
     unsafe {
         let i = *__errno_location();
